@@ -6,8 +6,8 @@
 
 ### OPTIONS AND VARIABLES ###
 
-dotfilesrepo="https://github.com/lukesmithxyz/voidrice.git"
-progsfile="https://raw.githubusercontent.com/LukeSmithxyz/LARBS/master/static/progs.csv"
+dotfilesrepo="https://github.com/PlaySomeJazz/dotfiles.git"
+progsfile="https://raw.githubusercontent.com/PlaySomeJazz/auto-install/master/static/progs.csv"
 aurhelper="yay"
 repobranch="master"
 export TERM=ansi
@@ -190,60 +190,6 @@ vimplugininstall() {
 	sudo -u "$name" nvim -c "PlugInstall|q|q"
 }
 
-makeuserjs(){
-	# Get the Arkenfox user.js and prepare it.
-	arkenfox="$pdir/arkenfox.js"
-	overrides="$pdir/user-overrides.js"
-	userjs="$pdir/user.js"
-	ln -fs "/home/$name/.config/firefox/larbs.js" "$overrides"
-	[ ! -f "$arkenfox" ] && curl -sL "https://raw.githubusercontent.com/arkenfox/user.js/master/user.js" > "$arkenfox"
-	cat "$arkenfox" "$overrides" > "$userjs"
-	chown "$name:wheel" "$arkenfox" "$userjs"
-	# Install the updating script.
-	mkdir -p /usr/local/lib /etc/pacman.d/hooks
-	cp "/home/$name/.local/bin/arkenfox-auto-update" /usr/local/lib/
-	chown root:root /usr/local/lib/arkenfox-auto-update
-	chmod 755 /usr/local/lib/arkenfox-auto-update
-	# Trigger the update when needed via a pacman hook.
-	echo "[Trigger]
-Operation = Upgrade
-Type = Package
-Target = firefox
-Target = librewolf
-Target = librewolf-bin
-[Action]
-Description=Update Arkenfox user.js
-When=PostTransaction
-Depends=arkenfox-user.js
-Exec=/usr/local/lib/arkenfox-auto-update" > /etc/pacman.d/hooks/arkenfox.hook
-}
-
-installffaddons(){
-	addonlist="ublock-origin decentraleyes istilldontcareaboutcookies vim-vixen"
-	addontmp="$(mktemp -d)"
-	trap "rm -fr $addontmp" HUP INT QUIT TERM PWR EXIT
-	IFS=' '
-	sudo -u "$name" mkdir -p "$pdir/extensions/"
-	for addon in $addonlist; do
-		if [ "$addon" = "ublock-origin" ]; then
-			addonurl="$(curl -sL https://api.github.com/repos/gorhill/uBlock/releases/latest | grep -E 'browser_download_url.*\.firefox\.xpi' | cut -d '"' -f 4)"
-		else
-			addonurl="$(curl --silent "https://addons.mozilla.org/en-US/firefox/addon/${addon}/" | grep -o 'https://addons.mozilla.org/firefox/downloads/file/[^"]*')"
-		fi
-		file="${addonurl##*/}"
-		sudo -u "$name" curl -LOs "$addonurl" > "$addontmp/$file"
-		id="$(unzip -p "$file" manifest.json | grep "\"id\"")"
-		id="${id%\"*}"
-		id="${id##*\"}"
-		mv "$file" "$pdir/extensions/$id.xpi"
-	done
-	chown -R "$name:$name" "$pdir/extensions"
-	# Fix a Vim Vixen bug with dark mode not fixed on upstream:
-	sudo -u "$name" mkdir -p "$pdir/chrome"
-	[ ! -f  "$pdir/chrome/userContent.css" ] && sudo -u "$name" echo ".vimvixen-console-frame { color-scheme: light !important; }
-#category-more-from-mozilla { display: none !important }" > "$pdir/chrome/userContent.css"
-}
-
 finalize() {
 	whiptail --title "All done!" \
 		--msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place.\\n\\nTo run the new graphical environment, log out and log back in as your new user, then run the command \"startx\" to start the graphical environment (it will start automatically in tty1).\\n\\n.t Luke" 13 80
@@ -324,17 +270,51 @@ rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/
 rmmod pcspkr
 echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
 
+# Some graphics tweaking
+echo "options i915 fastboot=1" >/etc/modprobe.d/i915.conf
+
+# Disable automatic core dumps
+echo "kernel.core_pattern=/dev/null" >/etc/sysctl.d/50-coredump.conf
+
+# Prevent excessive disk head parking
+echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B 254 -S 0 /dev/sda"' >/etc/udev/rules.d/69-hdparm.rules
+
+# Disable journal writing to disk
+sed -i 's/#Storage=auto/Storage=none/g' /etc/systemd/journald.conf
+
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
-sudo -u "$name" mkdir -p "/home/$name/.config/abook/"
 sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
+
+# Transfer some settings over
+cp "/home/$name/.local/share/temp/grub" /etc/default/grub
+cp "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+
+# Configure Emby
+sudo -u "$name" mkdir /mnt/media_files
+sudo -u "$name" mkdir /mnt/media_files/movies
+sudo -u "$name" mkdir /mnt/media_files/tv
+mkdir /etc/systemd/system/emby-server.service.d
+groupadd media
+usermod -aG media "$name"
+chgrp -R media /mnt/media_files
+find /mnt/media_files -type f -exec chmod 664 {} +
+find /mnt/media_files -type d -exec chmod 775 {} +
+find /mnt/media_files -type d -exec chmod g+s {} +
+echo "[Service]
+SupplementaryGroups=media
+ReadWritePaths=/mnt/media_files
+UMask=0002" >/etc/systemd/system/emby-server.service.d/write-permissions.conf
 
 # dbus UUID must be generated for Artix runit.
 dbus-uuidgen >/var/lib/dbus/machine-id
 
 # Use system notifications for Brave on Artix
 echo "export \$(dbus-launch)" >/etc/profile.d/dbus.sh
+
+# Enable undervolting service
+systemctl enable intel-undervolt.service
 
 # Enable tap to click
 [ ! -f /etc/X11/xorg.conf.d/40-libinput.conf ] && printf 'Section "InputClass"
@@ -346,25 +326,24 @@ echo "export \$(dbus-launch)" >/etc/profile.d/dbus.sh
 	Option "Tapping" "on"
 EndSection' >/etc/X11/xorg.conf.d/40-libinput.conf
 
-# All this below to get Librewolf installed with add-ons and non-bad settings.
+# All this below to get Firefox installed with add-ons and non-bad settings.
 
 whiptail --infobox "Setting browser privacy settings and add-ons..." 7 60
 
-browserdir="/home/$name/.librewolf"
+browserdir="/home/$name/.mozilla/firefox"
 profilesini="$browserdir/profiles.ini"
 
-# Start librewolf headless so it generates a profile. Then get that profile in a variable.
-sudo -u "$name" librewolf --headless >/dev/null 2>&1 &
-sleep 1
-profile="$(sed -n "/Default=.*.default-default/ s/.*=//p" "$profilesini")"
+# Start Firefox headless so it generates a profile. Then get that profile in a variable.
+sudo -u "$name" firefox --headless >/dev/null 2>&1 &
+sleep 20
+profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
-[ -d "$pdir" ] && makeuserjs
+cp "/home/$name/.config/firefox/custom.js" "$pdir/user.js"
+chown "$name:wheel" "$pdir/user.js"
 
-[ -d "$pdir" ] && installffaddons
-
-# Kill the now unnecessary librewolf instance.
-pkill -u "$name" librewolf
+# Kill the now unnecessary Firefox instance.
+pkill -u "$name" firefox
 
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
@@ -373,6 +352,9 @@ echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/
 echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-larbs-visudo-editor
 mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
+
+# Add kernel parameters
+grub-mkconfig -o /boot/grub/grub.cfg
 
 # Last message! Install complete!
 finalize
