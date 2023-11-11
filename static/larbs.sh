@@ -7,7 +7,7 @@
 ### OPTIONS AND VARIABLES ###
 
 dotfilesrepo="https://github.com/PlaySomeJazz/dotfiles.git"
-progsfile="https://raw.githubusercontent.com/PlaySomeJazz/auto-install/master/static/progs.csv"
+progsfile="https://raw.githubusercontent.com/PlaySomeJazz/coffee/master/static/progs.csv"
 aurhelper="yay"
 repobranch="master"
 export TERM=ansi
