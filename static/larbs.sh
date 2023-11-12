@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Luke's Auto Rice Boostrapping Script (LARBS)
+# Experimental fork of Luke's Auto Rice Boostrapping Script (LARBS)
 # by Luke Smith <luke@lukesmith.xyz>
 # License: GNU GPLv3
 
@@ -292,7 +292,7 @@ mkdir -p /etc/firefox/policies
 mv "/home/$name/.local/share/temp/grub" /etc/default/grub
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
-rm -rf "/home/$name/.local/share/temp
+rm -rf "/home/$name/.local/share/temp"
 
 # Configure Emby
 sudo -u "$name" mkdir /mnt/media_files
