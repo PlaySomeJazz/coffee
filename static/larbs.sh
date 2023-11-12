@@ -288,8 +288,10 @@ sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
 sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
 
 # Transfer some settings over
+mkdir -p /etc/firefox/policies
 cp "/home/$name/.local/share/temp/grub" /etc/default/grub
 cp "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+cp "/home/$name/.local/share/temp/policies.json /etc/firefox/policies/policies.json
 
 # Configure Emby
 sudo -u "$name" mkdir /mnt/media_files
@@ -335,7 +337,7 @@ profilesini="$browserdir/profiles.ini"
 
 # Start Firefox headless so it generates a profile. Then get that profile in a variable.
 sudo -u "$name" firefox --headless >/dev/null 2>&1 &
-sleep 20
+sleep 30
 profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
