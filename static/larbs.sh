@@ -289,9 +289,10 @@ sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
 
 # Transfer some settings over
 mkdir -p /etc/firefox/policies
-cp "/home/$name/.local/share/temp/grub" /etc/default/grub
-cp "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
-cp "/home/$name/.local/share/temp/policies.json /etc/firefox/policies/policies.json
+mv "/home/$name/.local/share/temp/grub" /etc/default/grub
+mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
+rm -rf "/home/$name/.local/share/temp
 
 # Configure Emby
 sudo -u "$name" mkdir /mnt/media_files
