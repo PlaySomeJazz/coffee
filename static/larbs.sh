@@ -342,7 +342,7 @@ sleep 30
 profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
-cp "/home/$name/.config/firefox/custom.js" "$pdir/user.js"
+ln -sf "/home/$name/.config/firefox/custom.js" "$pdir/user.js"
 chown "$name:wheel" "$pdir/user.js"
 
 # Kill the now unnecessary Firefox instance.
