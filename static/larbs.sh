@@ -338,7 +338,7 @@ profilesini="$browserdir/profiles.ini"
 
 # Start Firefox headless so it generates a profile. Then get that profile in a variable.
 sudo -u "$name" firefox --headless >/dev/null 2>&1 &
-sleep 30
+sleep 40
 profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
@@ -347,6 +347,15 @@ chown "$name:wheel" "$pdir/user.js"
 
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
+sleep 5
+
+# Install ff2mpv
+sudo -u "$name" mkdir "/home/$name/.mozilla/native-messaging-hosts/"
+mv "/home/$name/.config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
+chown "$name:wheel" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
+mv "/home/$name/.config/firefox/ff2mpv.py" "/home/$name/.local/bin/ff2mpv.py"
+chmod +x "/home/$name/.local/bin/ff2mpv.py"
+chown "$name:wheel" "/home/$name/.local/bin/ff2mpv.py"
 
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
