@@ -342,19 +342,15 @@ sleep 40
 profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
+# Continue with Firefox configuration
 ln -sf "/home/$name/.config/firefox/custom.js" "$pdir/user.js"
-
 chown "$name:wheel" "$pdir/user.js"
-
-# Kill the now unnecessary Firefox instance.
-pkill -u "$name" firefox
-
-# Install ff2mpv
-sleep 5
 sudo -u "$name" mkdir "/home/$name/.mozilla/native-messaging-hosts/"
 mv "/home/$name/.config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
 chown "$name:wheel" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
-chmod +x "/home/$name/.local/bin/ff2mpv.py"
+
+# Kill the now unnecessary Firefox instance.
+pkill -u "$name" firefox
 
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
