@@ -199,6 +199,13 @@ finalize() {
 
 ### This is how everything happens in an intuitive format and order.
 
+# Allow wheel users to sudo with password, else building packages might fail
+echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-wheel-can-sudo
+echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >/etc/sudoers.d/01-cmds-without-password
+echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-visudo-editor
+mkdir -p /etc/sysctl.d
+echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
+
 # Check if user is root on Arch distro. Install whiptail.
 pacman --noconfirm --needed -Sy libnewt ||
 	error "Are you sure you're running this as the root user, are on an Arch-based distribution and have an internet connection?"
@@ -234,11 +241,6 @@ ntpd -q -g >/dev/null 2>&1
 adduserandpass || error "Error adding username and/or password."
 
 [ -f /etc/sudoers.pacnew ] && cp /etc/sudoers.pacnew /etc/sudoers # Just in case
-
-# Allow user to run sudo without password. Since AUR programs must be installed
-# in a fakeroot environment, this is required for all builds with AUR.
-trap 'rm -f /etc/sudoers.d/larbs-temp' HUP INT QUIT TERM PWR EXIT
-echo "%wheel ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/larbs-temp
 
 # Make pacman colorful, concurrent downloads and Pacman eye-candy.
 grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
@@ -295,9 +297,9 @@ mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.
 rm -rf "/home/$name/.local/share/temp"
 
 # Configure Emby
-sudo -u "$name" mkdir /mnt/media_files
-sudo -u "$name" mkdir /mnt/media_files/movies
-sudo -u "$name" mkdir /mnt/media_files/tv
+mkdir /mnt/media_files
+mkdir /mnt/media_files/movies
+mkdir /mnt/media_files/tv
 mkdir /etc/systemd/system/emby-server.service.d
 groupadd media
 usermod -aG media "$name"
@@ -351,14 +353,6 @@ chown "$name:wheel" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
 
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
-
-# Allow wheel users to sudo with password and allow several system commands
-# (like `shutdown` to run without password).
-echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-larbs-wheel-can-sudo
-echo "%wheel ALL=(ALL:ALL) NOPASSWD: /usr/bin/shutdown,/usr/bin/reboot,/usr/bin/systemctl suspend,/usr/bin/wifi-menu,/usr/bin/mount,/usr/bin/umount,/usr/bin/pacman -Syu,/usr/bin/pacman -Syyu,/usr/bin/pacman -Syyu --noconfirm,/usr/bin/loadkeys,/usr/bin/pacman -Syyuw --noconfirm,/usr/bin/pacman -S -u -y --config /etc/pacman.conf --,/usr/bin/pacman -S -y -u --config /etc/pacman.conf --" >/etc/sudoers.d/01-larbs-cmds-without-password
-echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-larbs-visudo-editor
-mkdir -p /etc/sysctl.d
-echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
 
 # Add kernel parameters
 grub-mkconfig -o /boot/grub/grub.cfg
