@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Experimental fork of Luke's Auto Rice Boostrapping Script (LARBS)
+# Luke's Auto Rice Bootstrapping Script (LARBS)
 # by Luke Smith <luke@lukesmith.xyz>
 # License: GNU GPLv3
 
@@ -34,7 +34,7 @@ welcomemsg() {
 }
 
 getuserandpass() {
-	# Prompts user for new username an password.
+	# Prompts user for new username and password.
 	name=$(whiptail --inputbox "First, please enter a name for the user account." 10 60 3>&1 1>&2 2>&3 3>&1) || exit 1
 	while ! echo "$name" | grep -q "^[a-z_][a-z0-9_-]*$"; do
 		name=$(whiptail --nocancel --inputbox "Username not valid. Give a username beginning with a letter, with only lowercase letters, - or _." 10 60 3>&1 1>&2 2>&3 3>&1)
@@ -199,9 +199,11 @@ finalize() {
 
 ### This is how everything happens in an intuitive format and order.
 
-# Allow wheel users to sudo with password, else building packages might fail
+# Allow user to run sudo without password. Since AUR programs must be installed
+# in a fakeroot environment, this is required for all builds with AUR.
 echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-wheel-can-sudo
-echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >/etc/sudoers.d/01-cmds-without-password
+echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL
+Defaults:%wheel,root runcwd=*" >/etc/sudoers.d/01-cmds-without-password
 echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-visudo-editor
 mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
