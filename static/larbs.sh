@@ -292,13 +292,15 @@ sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
 sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
 
 # Make dash the default #!/bin/sh symlink.
-ln -sfT /bin/dash /bin/sh >/dev/null 2>&1
+ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 
 # Transfer some settings over
 mkdir -p /etc/firefox/policies
 mv "/home/$name/.local/share/temp/grub" /etc/default/grub
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
+mv "/home/$name/.local/share/temp/clean_cache.hook" /etc/pacman.d/hooks/clean_cache.hook
+mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
 rm -rf "/home/$name/.local/share/temp"
 
 # Configure Emby

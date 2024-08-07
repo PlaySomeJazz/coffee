@@ -3,6 +3,8 @@
 ,xorg-xwininfo,"allows querying information about windows."
 ,xorg-xinit,"starts the graphical server."
 ,xorg-xset,"speedup cursor."
+,dash,"alternative to bash."
+,pacman-contrib,"required for cleanup hook."
 ,polkit,"manages user policies."
 ,libertinus-font,"provides the sans and serif fonts for LARBS."
 ,ttf-font-awesome,"provides extended glyph support."
