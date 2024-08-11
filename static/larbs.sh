@@ -361,6 +361,11 @@ chown "$name:wheel" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
 
+# Switch to Cloudflare DNS
+echo -e "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-configured
+rm /etc/resolv.conf
+ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
+
 # Add kernel parameters
 grub-mkconfig -o /boot/grub/grub.cfg
 
