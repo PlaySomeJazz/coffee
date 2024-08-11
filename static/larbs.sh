@@ -199,15 +199,6 @@ finalize() {
 
 ### This is how everything happens in an intuitive format and order.
 
-# Allow user to run sudo without password. Since AUR programs must be installed
-# in a fakeroot environment, this is required for all builds with AUR.
-echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-wheel-can-sudo
-echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL
-Defaults:%wheel,root runcwd=*" >/etc/sudoers.d/01-cmds-without-password
-echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-visudo-editor
-mkdir -p /etc/sysctl.d
-echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
-
 # Check if user is root on Arch distro. Install whiptail.
 pacman --noconfirm --needed -Sy libnewt ||
 	error "Are you sure you're running this as the root user, are on an Arch-based distribution and have an internet connection?"
@@ -243,6 +234,12 @@ ntpd -q -g >/dev/null 2>&1
 adduserandpass || error "Error adding username and/or password."
 
 [ -f /etc/sudoers.pacnew ] && cp /etc/sudoers.pacnew /etc/sudoers # Just in case
+
+# Allow user to run sudo without password. Since AUR programs must be installed
+# in a fakeroot environment, this is required for all builds with AUR.
+trap 'rm -f /etc/sudoers.d/larbs-temp' HUP INT QUIT TERM PWR EXIT
+echo "%wheel ALL=(ALL) NOPASSWD: ALL
+Defaults:%wheel,root runcwd=*" >/etc/sudoers.d/larbs-temp
 
 # Make pacman colorful, concurrent downloads and Pacman eye-candy.
 grep -q "ILoveCandy" /etc/pacman.conf || sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
@@ -284,7 +281,7 @@ echo "kernel.core_pattern=/dev/null" >/etc/sysctl.d/50-coredump.conf
 echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B 254 -S 0 /dev/sda"' >/etc/udev/rules.d/69-hdparm.rules
 
 # Disable journal writing to disk
-sed -i 's/#Storage=auto/Storage=none/g' /etc/systemd/journald.conf
+sed -i 's/^#Storage=auto$/Storage=none/' /etc/systemd/journald.conf
 
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
@@ -319,12 +316,6 @@ SupplementaryGroups=media
 ReadWritePaths=/mnt/media_files
 UMask=0002" >/etc/systemd/system/emby-server.service.d/write-permissions.conf
 
-# dbus UUID must be generated for Artix runit.
-dbus-uuidgen >/var/lib/dbus/machine-id
-
-# Use system notifications for Brave on Artix
-echo "export \$(dbus-launch)" >/etc/profile.d/dbus.sh
-
 # Enable undervolting service
 systemctl enable intel-undervolt.service
 
@@ -352,19 +343,28 @@ profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
 # Continue with Firefox configuration
-ln -sf "/home/$name/.config/firefox/custom.js" "$pdir/user.js"
-chown "$name:wheel" "$pdir/user.js"
+sudo -u "$name" ln -sf "/home/$name/.config/firefox/custom.js" "$pdir/user.js"
 sudo -u "$name" mkdir "/home/$name/.mozilla/native-messaging-hosts/"
-mv "/home/$name/.config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
-chown "$name:wheel" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
+sudo -u "$name" mv "/home/$name/.config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
 
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
+
+# Allow wheel users to sudo with password and allow several system commands
+# (like `shutdown` to run without password).
+echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-wheel-can-sudo
+echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >/etc/sudoers.d/01-cmds-without-password
+echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-visudo-editor
+mkdir -p /etc/sysctl.d
+echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
 
 # Switch to Cloudflare DNS
 echo -e "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-configured
 rm /etc/resolv.conf
 ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
+
+# Cleanup
+rm -f /etc/sudoers.d/larbs-temp
 
 # Add kernel parameters
 grub-mkconfig -o /boot/grub/grub.cfg
