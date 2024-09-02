@@ -302,6 +302,7 @@ mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.
 mv "/home/$name/.local/share/temp/clean_cache.hook" /etc/pacman.d/hooks/clean_cache.hook
 mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
 mv "/home/$name/.local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
+mv "/home/$name/.local/share/temp/blacklists.conf" /etc/modprobe.d/blacklists.conf
 rm -rf "/home/$name/.local/share/temp"
 
 # Configure Emby
