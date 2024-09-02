@@ -370,5 +370,8 @@ rm -f /etc/sudoers.d/larbs-temp
 # Add kernel parameters
 grub-mkconfig -o /boot/grub/grub.cfg
 
+# Use a better scheduler
+echo bfq > /sys/block/sda/queue/scheduler
+
 # Last message! Install complete!
 finalize
