@@ -277,6 +277,9 @@ echo "options i915 fastboot=1" >/etc/modprobe.d/i915.conf
 # Disable automatic core dumps
 echo "kernel.core_pattern=/dev/null" >/etc/sysctl.d/50-coredump.conf
 
+# Switch to bfq scheduler
+echo 'ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"' >/etc/udev/rules.d/60-ioschedulers.rules
+
 # Prevent excessive disk head parking
 echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B 254 -S 0 /dev/sda"' >/etc/udev/rules.d/69-hdparm.rules
 
@@ -369,9 +372,6 @@ rm -f /etc/sudoers.d/larbs-temp
 
 # Add kernel parameters
 grub-mkconfig -o /boot/grub/grub.cfg
-
-# Use a better scheduler
-echo bfq > /sys/block/sda/queue/scheduler
 
 # Last message! Install complete!
 finalize
