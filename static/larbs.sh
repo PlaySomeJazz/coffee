@@ -372,7 +372,8 @@ ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
 rm -f /etc/sudoers.d/larbs-temp
 
 # Tune fstab
-awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",relatime,commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab
+awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",relatime,commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
+mv /etc/fstab.new /etc/fstab
 
 # Add kernel parameters
 grub-mkconfig -o /boot/grub/grub.cfg
