@@ -296,6 +296,7 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 
 # Transfer some settings over
 mkdir -p /etc/firefox/policies
+mkdir -p /etc/pacman.d/hooks
 mv "/home/$name/.local/share/temp/grub" /etc/default/grub
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
