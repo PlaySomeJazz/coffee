@@ -82,7 +82,6 @@ G,https://github.com/PlaySomeJazz/dmenu.git,"runs commands and provides a UI for
 G,https://github.com/PlaySomeJazz/st.git,"is my custom build of suckless's terminal emulator."
 G,https://github.com/PlaySomeJazz/dwm.git,"is the window manager."
 ,slock,"allows you to lock your computer, and quickly unlock with your password."
-,socat,"is a utility which establishes two byte streams and transfers data between them."
 ,moreutils,"is a collection of useful unix tools."
 ,tesseract,"command-line OCR engine for advance maimpick"
 ,tesseract-data-eng,"english language pack for OCR"
