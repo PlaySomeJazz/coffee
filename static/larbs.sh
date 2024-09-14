@@ -297,10 +297,15 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 # Transfer some settings over
 mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
+mkdir -p /usr/local/lib
 mv "/home/$name/.local/share/temp/grub" /etc/default/grub
+mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/
+chown root:root /usr/local/lib/cleanup-packages
+chmod 755 /usr/local/lib/cleanup-packages
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
 mv "/home/$name/.local/share/temp/clean_cache.hook" /etc/pacman.d/hooks/clean_cache.hook
+mv "/home/$name/.local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
 mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
 mv "/home/$name/.local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
 mv "/home/$name/.local/share/temp/blacklists.conf" /etc/modprobe.d/blacklists.conf
@@ -334,6 +339,10 @@ systemctl enable intel-undervolt.service
 	# Enable left mouse button by tapping
 	Option "Tapping" "on"
 EndSection' >/etc/X11/xorg.conf.d/40-libinput.conf
+
+# Cleanup some cache every week
+echo "e  /home/$name/.cache/lf/ - - - 7d
+e  /home/$name/.cache/ueberzugpp/ - - - 7d" > /etc/tmpfiles.d/cleanup-previews.conf
 
 # All this below to get Firefox installed with add-ons and non-bad settings.
 
