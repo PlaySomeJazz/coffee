@@ -271,14 +271,8 @@ rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/
 rmmod pcspkr
 echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
 
-# Some graphics tweaking
-echo "options i915 fastboot=1" >/etc/modprobe.d/i915.conf
-
 # Disable automatic core dumps
 echo "kernel.core_pattern=/dev/null" >/etc/sysctl.d/50-coredump.conf
-
-# Switch to bfq scheduler
-echo 'ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"' >/etc/udev/rules.d/60-ioschedulers.rules
 
 # Prevent excessive disk head parking
 echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B 254 -S 0 /dev/sda"' >/etc/udev/rules.d/69-hdparm.rules
@@ -303,6 +297,7 @@ mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/
 chown root:root /usr/local/lib/cleanup-packages
 chmod 755 /usr/local/lib/cleanup-packages
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
 mv "/home/$name/.local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
 mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
