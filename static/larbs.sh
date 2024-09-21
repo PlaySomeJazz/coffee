@@ -302,7 +302,7 @@ mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.
 mv "/home/$name/.local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
 mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
 mv "/home/$name/.local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
-mv "/home/$name/.local/share/temp/blacklists.conf" /etc/modprobe.d/blacklists.conf
+mv "/home/$name/.local/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
 rm -rf "/home/$name/.local/share/temp"
 
 # Configure Emby
@@ -322,7 +322,7 @@ ReadWritePaths=/mnt/media_files
 UMask=0002" >/etc/systemd/system/emby-server.service.d/write-permissions.conf
 
 # Enable undervolting service
-systemctl enable intel-undervolt.service
+#systemctl enable intel-undervolt.service
 
 # Enable tap to click
 [ ! -f /etc/X11/xorg.conf.d/40-libinput.conf ] && printf 'Section "InputClass"
@@ -376,7 +376,7 @@ ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
 rm -f /etc/sudoers.d/larbs-temp
 
 # Tune fstab
-awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",relatime,commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
+awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
 mv /etc/fstab.new /etc/fstab
 
 # Add kernel parameters
