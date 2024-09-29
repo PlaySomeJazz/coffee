@@ -362,7 +362,7 @@ sudo -u "$name" mv "/home/$name/.config/firefox/ff2mpv.json" "/home/$name/.mozil
 pkill -u "$name" firefox
 
 # Enable audio
-sudo -u "$name" systemctl --user --now enable pipewire-pulse.socket wireplumber
+sudo -u "$name" systemctl --user enable --now pipewire-pulse.socket wireplumber.service
 
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
