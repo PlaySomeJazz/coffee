@@ -190,6 +190,23 @@ vimplugininstall() {
 	sudo -u "$name" nvim -c "PlugInstall|q|q"
 }
 
+fix_mpv_ytdl() {
+	whiptail --infobox "Fixing youtube throttling when using mpv..." 7 60
+	sudo -u "$name" git -C "$repodir" clone --depth 1 --single-branch \
+		--no-tags -q "https://gist.github.com/253347b2c9a53bbd6087f086970106b6.git" "$repodir/ytrangefix"
+	cd "$repodir/ytrangefix" || return 1
+	sudo -u "$name" mkdir src
+	sudo -u "$name" cp main.rs src/
+	sudo -u "$name" cargo build --release >/dev/null 2>&1
+	scriptdir="/home/$name/.config/mpv/scripts/ytrangefix"
+	sudo -u "$name" mkdir -p "$scriptdir"
+	sudo -u "$name" cp target/release/http-ytproxy "$scriptdir/"
+	sudo -u "$name" cp ytproxy.lua "$scriptdir/main.lua"
+	cd "$scriptdir" || return 1
+	sudo -u "$name" openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650 -passout pass:"third-wheel" -subj "/C=US/ST=private/L=province/O=city/CN=hostname.example.com"
+	cd /tmp || return 1
+}
+
 finalize() {
 	whiptail --title "All done!" \
 		--msgbox "Congrats! Provided there were no hidden errors, the script completed successfully and all the programs and configuration files should be in place.\\n\\nTo run the new graphical environment, log out and log back in as your new user, then run the command \"startx\" to start the graphical environment (it will start automatically in tty1).\\n\\n.t Luke" 13 80
@@ -380,12 +397,15 @@ echo -e "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-con
 rm /etc/resolv.conf
 ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
 
-# Cleanup
-rm -f /etc/sudoers.d/larbs-temp
-
 # Tune fstab
 awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
 mv /etc/fstab.new /etc/fstab
+
+# Fix mpv buffering when using yt-dlp
+fix_mpv_ytdl
+
+# Cleanup
+rm -f /etc/sudoers.d/larbs-temp
 
 # Add kernel parameters
 grub-mkconfig -o /boot/grub/grub.cfg
