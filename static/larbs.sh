@@ -192,8 +192,7 @@ vimplugininstall() {
 
 fix_mpv_ytdl() {
 	whiptail --infobox "Fixing youtube throttling when using mpv..." 7 60
-	sudo -u "$name" git -C "$repodir" clone --depth 1 --single-branch \
-		--no-tags -q "https://gist.github.com/253347b2c9a53bbd6087f086970106b6.git" "$repodir/ytrangefix"
+	sudo -u "$name" git -C "$repodir" clone -q "https://gist.github.com/253347b2c9a53bbd6087f086970106b6.git" "$repodir/ytrangefix"
 	cd "$repodir/ytrangefix" || return 1
 	sudo -u "$name" mkdir src
 	sudo -u "$name" cp main.rs src/
