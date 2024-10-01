@@ -274,6 +274,9 @@ echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
 # Disable automatic core dumps
 echo "kernel.core_pattern=/dev/null" >/etc/sysctl.d/50-coredump.conf
 
+# Quieten console
+echo "kernel.printk = 3 3 3 3" >/etc/sysctl.d/20-quiet-printk.conf
+
 # Prevent excessive disk head parking
 echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B 254 -S 0 /dev/sda"' >/etc/udev/rules.d/69-hdparm.rules
 
