@@ -383,6 +383,7 @@ pkill -u "$name" firefox
 
 # Enable audio
 sudo -u "$name" systemctl --user enable pipewire
+systemctl enable mpd.socket
 
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
