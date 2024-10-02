@@ -192,6 +192,7 @@ vimplugininstall() {
 
 fix_mpv_ytdl() {
 	whiptail --infobox "Fixing youtube throttling when using mpv..." 7 60
+	sudo -u "$name" rustup default stable >/dev/null 2>&1
 	sudo -u "$name" git -C "$repodir" clone -q "https://gist.github.com/253347b2c9a53bbd6087f086970106b6.git" "$repodir/ytrangefix"
 	cd "$repodir/ytrangefix" || return 1
 	sudo -u "$name" mkdir src
@@ -202,7 +203,7 @@ fix_mpv_ytdl() {
 	sudo -u "$name" cp target/release/http-ytproxy "$scriptdir/"
 	sudo -u "$name" cp ytproxy.lua "$scriptdir/main.lua"
 	cd "$scriptdir" || return 1
-	sudo -u "$name" openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650 -passout pass:"third-wheel" -subj "/C=US/ST=private/L=province/O=city/CN=hostname.example.com"
+	sudo -u "$name" openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650 -passout pass:"third-wheel" -subj "/C=US/ST=private/L=province/O=city/CN=hostname.example.com" >/dev/null 2>&1
 	cd /tmp || return 1
 }
 
