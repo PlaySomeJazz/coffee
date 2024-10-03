@@ -318,6 +318,7 @@ mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/
 chown root:root /usr/local/lib/cleanup-packages
 chmod 755 /usr/local/lib/cleanup-packages
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
 mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
 mv "/home/$name/.local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
@@ -325,22 +326,23 @@ mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_d
 mv "/home/$name/.local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
 mv "/home/$name/.local/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
 rm -rf "/home/$name/.local/share/temp"
+systemctl enable keyd
 
 # Configure Emby
-mkdir /mnt/media_files
-mkdir /mnt/media_files/movies
-mkdir /mnt/media_files/tv
-mkdir /mnt/media_files/torrents
+mkdir /media_files
+mkdir /media_files/movies
+mkdir /media_files/tv
+mkdir /media_files/torrents
 mkdir /etc/systemd/system/emby-server.service.d
 groupadd media
 usermod -aG media "$name"
-chgrp -R media /mnt/media_files
-find /mnt/media_files -type f -exec chmod 664 {} +
-find /mnt/media_files -type d -exec chmod 775 {} +
-find /mnt/media_files -type d -exec chmod g+s {} +
+chgrp -R media /media_files
+find /media_files -type f -exec chmod 664 {} +
+find /media_files -type d -exec chmod 775 {} +
+find /media_files -type d -exec chmod g+s {} +
 echo "[Service]
 SupplementaryGroups=media
-ReadWritePaths=/mnt/media_files
+ReadWritePaths=/media_files
 UMask=0002" >/etc/systemd/system/emby-server.service.d/write-permissions.conf
 
 # Enable undervolting service
