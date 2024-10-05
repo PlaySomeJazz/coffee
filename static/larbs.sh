@@ -319,6 +319,7 @@ chown root:root /usr/local/lib/cleanup-packages
 chmod 755 /usr/local/lib/cleanup-packages
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
+mv "/home/$name/.local/share/temp/updatedb.conf" /etc/updatedb.conf
 mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
 mv "/home/$name/.local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
