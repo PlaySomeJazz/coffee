@@ -304,7 +304,6 @@ sed -i 's/^#Storage=auto$/Storage=none/' /etc/systemd/journald.conf
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
 sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
-sudo -u "$name" mkdir -p "/home/$name/Videos/Watchlist/"
 
 # Make dash the default #!/bin/sh symlink.
 ln -sfT dash /usr/bin/sh >/dev/null 2>&1
