@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Sets up systemd-boot.
+bootctl install
 
 echo "default arch.conf
 timeout 0" > /boot/loader/loader.conf
