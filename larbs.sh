@@ -312,7 +312,6 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
-mv "/home/$name/.local/share/temp/grub" /etc/default/grub
 mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/
 chown root:root /usr/local/lib/cleanup-packages
 chmod 755 /usr/local/lib/cleanup-packages
@@ -409,9 +408,6 @@ fix_mpv_ytdl
 
 # Cleanup
 rm -f /etc/sudoers.d/larbs-temp
-
-# Add kernel parameters
-grub-mkconfig -o /boot/grub/grub.cfg
 
 # Last message! Install complete!
 finalize
