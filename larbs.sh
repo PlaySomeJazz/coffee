@@ -7,7 +7,7 @@
 ### OPTIONS AND VARIABLES ###
 
 dotfilesrepo="https://github.com/PlaySomeJazz/dotfiles.git"
-progsfile="https://raw.githubusercontent.com/PlaySomeJazz/coffee/master/static/progs.csv"
+progsfile="https://raw.githubusercontent.com/PlaySomeJazz/coffee/master/progs.csv"
 aurhelper="yay"
 repobranch="master"
 export TERM=ansi
@@ -323,6 +323,7 @@ mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-io
 mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
 mv "/home/$name/.local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
 mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
+mv "/home/$name/.local/share/temp/95-systemd-boot.hook" /etc/pacman.d/hooks/95-systemd-boot.hook
 mv "/home/$name/.local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
 mv "/home/$name/.local/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
 rm -rf "/home/$name/.local/share/temp"
