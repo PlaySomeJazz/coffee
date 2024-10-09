@@ -147,7 +147,7 @@ pipxinstall() {
 	whiptail --title "LARBS Installation" \
 		--infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 9 70
 	[ -x "$(command -v "pipx")" ] || installpkg python-pipx >/dev/null 2>&1
-	pipx install "$1" >/dev/null 2>&1
+	sudo -u "$name" pipx install "$1" >/dev/null 2>&1
 }
 
 installationloop() {
