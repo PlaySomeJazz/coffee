@@ -143,11 +143,11 @@ aurinstall() {
 	sudo -u "$name" $aurhelper -S --noconfirm "$1" >/dev/null 2>&1
 }
 
-pipinstall() {
+pipxinstall() {
 	whiptail --title "LARBS Installation" \
 		--infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 9 70
-	[ -x "$(command -v "pip")" ] || installpkg python-pip >/dev/null 2>&1
-	yes | pip install "$1"
+	[ -x "$(command -v "pipx")" ] || installpkg python-pipx >/dev/null 2>&1
+	pipx install "$1" >/dev/null 2>&1
 }
 
 installationloop() {
@@ -162,7 +162,7 @@ installationloop() {
 		case "$tag" in
 		"A") aurinstall "$program" "$comment" ;;
 		"G") gitmakeinstall "$program" "$comment" ;;
-		"P") pipinstall "$program" "$comment" ;;
+		"P") pipxinstall "$program" "$comment" ;;
 		*) maininstall "$program" "$comment" ;;
 		esac
 	done </tmp/progs.csv
@@ -316,6 +316,7 @@ mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/
 chown root:root /usr/local/lib/cleanup-packages
 chmod 755 /usr/local/lib/cleanup-packages
 mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+mv "/home/$name/.local/share/temp/phantomjs" /usr/bin/phantomjs
 mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
 mv "/home/$name/.local/share/temp/updatedb.conf" /etc/updatedb.conf
 mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
