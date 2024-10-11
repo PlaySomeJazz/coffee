@@ -146,7 +146,6 @@ aurinstall() {
 pipxinstall() {
 	whiptail --title "LARBS Installation" \
 		--infobox "Installing the Python package \`$1\` ($n of $total). $1 $2" 9 70
-	[ -x "$(command -v "pipx")" ] || installpkg python-pipx >/dev/null 2>&1
 	sudo -u "$name" pipx install "$1" >/dev/null 2>&1
 }
 
@@ -284,15 +283,8 @@ rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/
 # Install vim plugins if not alread present.
 [ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
 
-# Most important command! Get rid of the beep!
-rmmod pcspkr
-echo "blacklist pcspkr" >/etc/modprobe.d/nobeep.conf
-
 # Disable automatic core dumps
 echo "kernel.core_pattern=/dev/null" >/etc/sysctl.d/50-coredump.conf
-
-# Quieten console
-echo "kernel.printk = 3 3 3 3" >/etc/sysctl.d/20-quiet-printk.conf
 
 # Prevent excessive disk head parking
 echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B 254 -S 0 /dev/sda"' >/etc/udev/rules.d/69-hdparm.rules
