@@ -292,9 +292,6 @@ echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B
 # Disable journal writing to disk
 sed -i 's/^#Storage=auto$/Storage=none/' /etc/systemd/journald.conf
 
-# Fix for dash users
-sed -i '1s/^.*$/#!/bin/bash/' /usr/share/libalpm/scripts/systemd-hook
-
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
