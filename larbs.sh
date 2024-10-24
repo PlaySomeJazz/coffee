@@ -292,6 +292,10 @@ echo 'ACTION=="add", SUBSYSTEM=="block", KERNEL=="sda", RUN+="/usr/bin/hdparm -B
 # Disable journal writing to disk
 sed -i 's/^#Storage=auto$/Storage=none/' /etc/systemd/journald.conf
 
+# Improve font rendering
+sed -i '/export FREETYPE_PROPERTIES="truetype:interpreter-version=40"/s/^#//' /etc/profile.d/freetype2.sh
+ln -s /etc/fonts/conf.avail/70-no-bitmaps.conf /etc/fonts/conf.d
+
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
 sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
