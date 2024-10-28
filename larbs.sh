@@ -391,7 +391,7 @@ mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
 
 # Switch to Cloudflare DNS
-echo -e "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-configured
+printf "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-configured
 rm /etc/resolv.conf
 ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
 
