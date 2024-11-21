@@ -304,13 +304,18 @@ sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
 ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 
 # Transfer some settings over
+curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
+sudo -u "$name" mkdir -p "/home/$name/.config/nsxiv/exec"
+sudo -u "$name" ln -sf "/home/$name/.local/bin/key-handler" "/home/$name/.config/nsxiv/exec/key-handler"
 mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
-mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/
-chown root:root /usr/local/lib/cleanup-packages
+mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages
 chmod 755 /usr/local/lib/cleanup-packages
-mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+mv "/home/$name/.local/bin/ff2mpv-rust" /usr/local/bin/ff2mpv-rust
+mv "/home/$name/.local/bin/tordone" /usr/local/bin/tordone
+mv "/home/$name/.local/bin/transadd" /usr/local/bin/transadd; chown "$name":wheel /usr/local/bin/transadd
+#mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/phantomjs" /usr/bin/phantomjs
 mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
 mv "/home/$name/.local/share/temp/updatedb.conf" /etc/updatedb.conf
@@ -382,6 +387,18 @@ pkill -u "$name" firefox
 # Enable audio
 sudo -u "$name" systemctl --user enable pipewire mpd
 
+# Tune fstab
+awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
+mv /etc/fstab.new /etc/fstab
+
+# Fix mpv buffering when using yt-dlp
+fix_mpv_ytdl
+
+# Switch to Cloudflare DNS
+printf "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-configured
+rm /etc/resolv.conf
+ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
+
 # Allow wheel users to sudo with password and allow several system commands
 # (like `shutdown` to run without password).
 echo "%wheel ALL=(ALL:ALL) ALL" >/etc/sudoers.d/00-wheel-can-sudo
@@ -389,18 +406,6 @@ echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >/etc/sudoers.d/01-cmds-without-passwo
 echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-visudo-editor
 mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
-
-# Switch to Cloudflare DNS
-printf "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-configured
-rm /etc/resolv.conf
-ln -s /etc/resolv.conf.manually-configured /etc/resolv.conf
-
-# Tune fstab
-awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
-mv /etc/fstab.new /etc/fstab
-
-# Fix mpv buffering when using yt-dlp
-fix_mpv_ytdl
 
 # Cleanup
 rm -f /etc/sudoers.d/larbs-temp
