@@ -305,17 +305,18 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 
 # Transfer some settings over
 curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
+chmod 755 /usr/local/bin/dra-cla
 sudo -u "$name" mkdir -p "/home/$name/.config/nsxiv/exec"
 sudo -u "$name" ln -sf "/home/$name/.local/bin/key-handler" "/home/$name/.config/nsxiv/exec/key-handler"
 mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
 mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages; chmod 755 /usr/local/lib/cleanup-packages
-mv "/home/$name/.local/bin/ff2mpv-rust" /usr/local/bin/ff2mpv-rust
 mv "/home/$name/.local/bin/tordone" /usr/local/bin/tordone
-mv "/home/$name/.local/bin/trackersadd" /usr/local/bin/trackersadd; chown "$name":wheel /usr/local/bin/trackersadd; chmod 755 /usr/local/bin/trackersadd
+mv "/home/$name/.local/bin/trackersadd" /usr/local/bin/trackersadd; chown "$name":wheel /usr/local/bin/trackersadd
 #mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/phantomjs" /usr/bin/phantomjs
+mv "/home/$name/.local/share/temp/ff2mpv-rust" /usr/bin/ff2mpv-rust
 mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
 mv "/home/$name/.local/share/temp/updatedb.conf" /etc/updatedb.conf
 mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
