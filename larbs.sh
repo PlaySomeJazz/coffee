@@ -314,7 +314,7 @@ mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/cleanup-packa
 chmod 755 /usr/local/lib/cleanup-packages
 mv "/home/$name/.local/bin/ff2mpv-rust" /usr/local/bin/ff2mpv-rust
 mv "/home/$name/.local/bin/tordone" /usr/local/bin/tordone
-mv "/home/$name/.local/bin/transadd" /usr/local/bin/transadd; chown "$name":wheel /usr/local/bin/transadd
+mv "/home/$name/.local/bin/trackersadd" /usr/local/bin/trackersadd; chown "$name":wheel /usr/local/bin/trackersadd
 #mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/phantomjs" /usr/bin/phantomjs
 mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
