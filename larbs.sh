@@ -312,10 +312,11 @@ mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
 mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages; chmod 755 /usr/local/lib/cleanup-packages
-mv "/home/$name/.local/bin/tordone" /usr/local/bin/tordone
+mv "/home/$name/.local/bin/tordone" /usr/local/bin/tordone; chown "$name":wheel /usr/local/bin/tordone
 #mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/phantomjs" /usr/bin/phantomjs
 mv "/home/$name/.local/share/temp/ff2mpv-rust" /usr/local/bin/ff2mpv-rust
+mv "/home/$name/.local/share/temp/betterfox_updater" /usr/local/bin/betterfox-updater; chown "$name":wheel /usr/local/bin/betterfox_updater
 mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
 mv "/home/$name/.local/share/temp/updatedb.conf" /etc/updatedb.conf
 mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
@@ -376,7 +377,8 @@ profile="$(sed -n "/Default=.*.default-release/ s/.*=//p" "$profilesini")"
 pdir="$browserdir/$profile"
 
 # Continue with Firefox configuration
-sudo -u "$name" ln -sf "/home/$name/.config/firefox/custom.js" "$pdir/user.js"
+sudo -u "$name" /usr/local/bin/betterfox_updater
+sudo -u "$name" ln -sf "/home/$name/.config/firefox/user.js" "$pdir/user.js"
 sudo -u "$name" mkdir "/home/$name/.mozilla/native-messaging-hosts/"
 sudo -u "$name" mv "/home/$name/.config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
 
