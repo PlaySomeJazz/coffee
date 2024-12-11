@@ -316,7 +316,7 @@ mv "/home/$name/.local/bin/tordone" /usr/local/bin/tordone; chown "$name":wheel 
 #mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "/home/$name/.local/share/temp/phantomjs" /usr/bin/phantomjs
 mv "/home/$name/.local/share/temp/ff2mpv-rust" /usr/local/bin/ff2mpv-rust
-mv "/home/$name/.local/share/temp/betterfox_updater" /usr/local/bin/betterfox-updater; chown "$name":wheel /usr/local/bin/betterfox_updater
+mv "/home/$name/.local/share/temp/betterfox_updater" /usr/local/bin/betterfox_updater; chown "$name":wheel /usr/local/bin/betterfox_updater
 mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
 mv "/home/$name/.local/share/temp/updatedb.conf" /etc/updatedb.conf
 mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
