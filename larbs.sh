@@ -70,6 +70,7 @@ adduserandpass() {
 	useradd -m -g wheel -s /bin/zsh "$name" >/dev/null 2>&1 ||
 		usermod -a -G wheel "$name" && mkdir -p /home/"$name" && chown "$name":wheel /home/"$name"
 	export repodir="/home/$name/.local/src"
+	export config="/home/$name/.local/etc"
 	mkdir -p "$repodir"
 	chown -R "$name":wheel "$(dirname "$repodir")"
 	echo "$name:$pass1" | chpasswd
@@ -183,9 +184,9 @@ putgitrepo() {
 vimplugininstall() {
 	# Installs vim plugins.
 	whiptail --infobox "Installing neovim plugins..." 7 60
-	mkdir -p "/home/$name/.config/nvim/autoload"
-	curl -Ls "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" >  "/home/$name/.config/nvim/autoload/plug.vim"
-	chown -R "$name:wheel" "/home/$name/.config/nvim"
+	mkdir -p "$config/nvim/autoload"
+	curl -Ls "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" >  "$config/nvim/autoload/plug.vim"
+	chown -R "$name:wheel" "$config/nvim"
 	sudo -u "$name" nvim -c "PlugInstall|q|q"
 }
 
@@ -197,7 +198,7 @@ fix_mpv_ytdl() {
 	sudo -u "$name" mkdir src
 	sudo -u "$name" cp main.rs src/
 	sudo -u "$name" cargo build --release >/dev/null 2>&1
-	scriptdir="/home/$name/.config/mpv/scripts/ytrangefix"
+	scriptdir="$config/mpv/scripts/ytrangefix"
 	sudo -u "$name" mkdir -p "$scriptdir"
 	sudo -u "$name" cp target/release/http-ytproxy "$scriptdir/"
 	sudo -u "$name" cp ytproxy.lua "$scriptdir/main.lua"
@@ -278,10 +279,10 @@ installationloop
 # Install the dotfiles in the user's home directory, but remove .git dir and
 # other unnecessary files.
 putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
-rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml" "/home/$name/.config/firefox/latest.xpi"
+rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml" "$config/firefox/latest.xpi"
 
 # Install vim plugins if not alread present.
-[ ! -f "/home/$name/.config/nvim/autoload/plug.vim" ] && vimplugininstall
+[ ! -f "$config/nvim/autoload/plug.vim" ] && vimplugininstall
 
 # Disable automatic core dumps
 echo "kernel.core_pattern=/dev/null" >/etc/sysctl.d/50-coredump.conf
@@ -297,8 +298,8 @@ sed -i '/export FREETYPE_PROPERTIES="truetype:interpreter-version=40"/s/^#//' /e
 
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
-sudo -u "$name" mkdir -p "/home/$name/.cache/zsh/"
-sudo -u "$name" mkdir -p "/home/$name/.config/mpd/playlists/"
+sudo -u "$name" mkdir -p "/home/$name/.local/var/cache/zsh/"
+sudo -u "$name" mkdir -p "$config/mpd/playlists/"
 
 # Make dash the default #!/bin/sh symlink.
 ln -sfT dash /usr/bin/sh >/dev/null 2>&1
@@ -306,8 +307,8 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 # Transfer some settings over
 curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
 chmod 755 /usr/local/bin/dra-cla
-sudo -u "$name" mkdir -p "/home/$name/.config/nsxiv/exec"
-sudo -u "$name" ln -sf "/home/$name/.local/bin/key-handler" "/home/$name/.config/nsxiv/exec/key-handler"
+sudo -u "$name" mkdir -p "$config/nsxiv/exec"
+sudo -u "$name" ln -sf "/home/$name/.local/bin/key-handler" "$config/nsxiv/exec/key-handler"
 mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
@@ -378,9 +379,9 @@ pdir="$browserdir/$profile"
 
 # Continue with Firefox configuration
 sudo -u "$name" /usr/local/bin/betterfox_updater
-sudo -u "$name" ln -sf "/home/$name/.config/firefox/user.js" "$pdir/user.js"
+sudo -u "$name" ln -sf "$config/firefox/user.js" "$pdir/user.js"
 sudo -u "$name" mkdir "/home/$name/.mozilla/native-messaging-hosts/"
-sudo -u "$name" mv "/home/$name/.config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
+sudo -u "$name" mv "$config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
 
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
