@@ -386,9 +386,6 @@ sudo -u "$name" mv "$config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-me
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
 
-# Enable audio
-sudo -u "$name" systemctl --user enable pipewire mpd
-
 # Tune fstab
 awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
 mv /etc/fstab.new /etc/fstab
