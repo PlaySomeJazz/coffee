@@ -395,6 +395,9 @@ rm -f $t
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
 
+# Enable audio
+sudo -u "$name" systemctl --user enable pipewire mpd
+
 # Tune fstab
 awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
 mv /etc/fstab.new /etc/fstab
@@ -414,6 +417,9 @@ echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" >/etc/sudoers.d/01-cmds-without-passwo
 echo "Defaults editor=/usr/bin/nvim" >/etc/sudoers.d/02-visudo-editor
 mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
+
+# Enable NTP
+timedatectl set-ntp true
 
 # Cleanup
 rm -f /etc/sudoers.d/larbs-temp
