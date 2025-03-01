@@ -308,7 +308,7 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 printf '%s\n' "XDG_CACHE_HOME  DEFAULT=@{HOME}/.local/var/cache
 XDG_CONFIG_HOME DEFAULT=@{HOME}/.local/etc
 XDG_DATA_HOME   DEFAULT=@{HOME}/.local/share
-XDG_STATE_HOME  DEFAULT=@{HOME}/.local/var/state" >/etc/security/pam_env.conf
+XDG_STATE_HOME  DEFAULT=@{HOME}/.local/var/state" >>/etc/security/pam_env.conf
 
 # Transfer some settings over
 curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
