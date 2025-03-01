@@ -419,6 +419,12 @@ mkdir -p /etc/sysctl.d
 echo "kernel.dmesg_restrict = 0" > /etc/sysctl.d/dmesg.conf
 
 # Enable NTP
+mkdir -p /etc/systemd/timesyncd.conf.d
+printf '%s\n' "[Time]
+RootDistanceMaxSec=0.1
+PollIntervalMinSec=1d
+PollIntervalMaxSec=4w
+SaveIntervalSec=infinity" >/etc/systemd/timesyncd.conf.d/local.conf
 timedatectl set-ntp true
 
 # Cleanup
