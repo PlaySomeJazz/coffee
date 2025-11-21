@@ -304,13 +304,6 @@ sudo -u "$name" mkdir -p "$config/mpd/playlists/"
 # Make dash the default #!/bin/sh symlink.
 ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 
-# Set XDG base directories
-printf '%s\n' 'XDG_CACHE_HOME  DEFAULT=@{HOME}/.local/var/cache
-XDG_CONFIG_HOME DEFAULT=@{HOME}/.local/etc
-XDG_DATA_HOME   DEFAULT=@{HOME}/.local/share
-XDG_STATE_HOME  DEFAULT=@{HOME}/.local/var/state
-ZDOTDIR         DEFAULT=${XDG_CONFIG_HOME}/zsh' >>/etc/security/pam_env.conf
-
 # Transfer some settings over
 curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
 chmod 755 /usr/local/bin/dra-cla
@@ -375,7 +368,7 @@ e  /home/$name/.cache/ueberzugpp/ - - - 7d" > /etc/tmpfiles.d/cleanup-previews.c
 
 whiptail --infobox "Setting browser privacy settings and add-ons..." 7 60
 
-browserdir="/home/$name/.mozilla/firefox"
+browserdir="$config/mozilla/firefox"
 profilesini="$browserdir/profiles.ini"
 
 # Start Firefox headless so it generates a profile. Then get that profile in a variable.
@@ -389,8 +382,8 @@ t="/tmp/f$$"
 curl -sL -o $t "https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main/user.js"
 cat "$config/firefox/custom.js" $t > "$config/firefox/user.js"
 sudo -u "$name" ln -sf "$config/firefox/user.js" "$pdir/user.js"
-sudo -u "$name" mkdir "/home/$name/.mozilla/native-messaging-hosts/"
-sudo -u "$name" mv "$config/firefox/ff2mpv.json" "/home/$name/.mozilla/native-messaging-hosts/ff2mpv.json"
+sudo -u "$name" mkdir "/home/$name/.local/etc/mozilla/native-messaging-hosts/"
+sudo -u "$name" mv "$config/firefox/ff2mpv.json" "/home/$name/.local/etc/mozilla/native-messaging-hosts/ff2mpv.json"
 rm -f $t
 
 # Kill the now unnecessary Firefox instance.

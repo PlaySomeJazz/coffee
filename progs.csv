@@ -8,7 +8,7 @@
 ,jq,"transmission trackers dependency."
 ,plocate,"file searcher dependency."
 ,otf-libertinus,"provides the sans and serif fonts for LARBS."
-,ttf-font-awesome,"provides extended glyph support."
+,woff2-font-awesome,"provides extended glyph support."
 ,ttf-nerd-fonts-symbols,"even more glyphs."
 ,ttf-dejavu,"properly displays emojis."
 A,lf-git,"is an extensive terminal file manager that everyone likes."
