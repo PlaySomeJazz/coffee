@@ -389,6 +389,10 @@ rm -f $t
 # Kill the now unnecessary Firefox instance.
 pkill -u "$name" firefox
 
+# Enable bluetooth
+systemctl enable bluetooth
+rfkill unblock bluetooth
+
 # Enable audio
 sudo -u "$name" systemctl --user enable pipewire mpd
 
