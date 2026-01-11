@@ -393,6 +393,10 @@ pkill -u "$name" firefox
 systemctl enable bluetooth
 rfkill unblock bluetooth
 
+# Ensure Bluetooth does not automatically turn on at boot
+sed -i 's/^#AutoEnable=false/AutoEnable=false/' /etc/bluetooth/main.conf
+sed -i 's/^AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
+
 # Enable audio
 sudo -u "$name" systemctl --user enable pipewire mpd
 
