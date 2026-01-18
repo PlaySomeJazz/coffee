@@ -3,6 +3,7 @@
 ,xorg-xinit,"starts the graphical server."
 ,xorg-xset,"speedup cursor."
 ,xorg-xsetroot,"statusbar dependency."
+,ksh,"classic shell."
 ,pacman-contrib,"cleanup hook dependency."
 ,python-pipx,"installer for python programs."
 ,jq,"transmission trackers dependency."
