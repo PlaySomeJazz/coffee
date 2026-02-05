@@ -67,10 +67,12 @@ preinstallmsg() {
 adduserandpass() {
 	# Adds user `$name` with password $pass1.
 	whiptail --infobox "Adding user \"$name\"..." 7 50
+	useradd -D -b /usr
+	export home="/usr/$name"
 	useradd -m -g wheel -s /bin/zsh "$name" >/dev/null 2>&1 ||
-		usermod -a -G wheel "$name" && mkdir -p /home/"$name" && chown "$name":wheel /home/"$name"
-	export repodir="/home/$name/.local/src"
-	export config="/home/$name/.local/etc"
+		usermod -a -G wheel "$name" && mkdir -p "$home" && chown "$name":wheel "$home"
+	export repodir="$home/local/src"
+	export config="$home/local/etc"
 	mkdir -p "$repodir"
 	chown -R "$name":wheel "$(dirname "$repodir")"
 	echo "$name:$pass1" | chpasswd
@@ -190,6 +192,7 @@ vimplugininstall() {
 	sudo -u "$name" nvim -c "PlugInstall|q|q"
 }
 
+: '
 fix_mpv_ytdl() {
 	whiptail --infobox "Fixing youtube throttling when using mpv..." 7 60
 	sudo -u "$name" rustup default stable >/dev/null 2>&1
@@ -206,6 +209,7 @@ fix_mpv_ytdl() {
 	sudo -u "$name" openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650 -passout pass:"third-wheel" -subj "/C=US/ST=private/L=province/O=city/CN=hostname.example.com" >/dev/null 2>&1
 	cd /tmp || return 1
 }
+'
 
 finalize() {
 	whiptail --title "All done!" \
@@ -278,8 +282,8 @@ installationloop
 
 # Install the dotfiles in the user's home directory, but remove .git dir and
 # other unnecessary files.
-putgitrepo "$dotfilesrepo" "/home/$name" "$repobranch"
-rm -rf "/home/$name/.git/" "/home/$name/README.md" "/home/$name/LICENSE" "/home/$name/FUNDING.yml" "$config/firefox/latest.xpi"
+putgitrepo "$dotfilesrepo" "$home" "$repobranch"
+rm -rf "$home/.git/" "$home/README.md" "$home/LICENSE" "$home/FUNDING.yml"
 
 # Install vim plugins if not alread present.
 [ ! -f "$config/nvim/autoload/plug.vim" ] && vimplugininstall
@@ -298,7 +302,7 @@ sed -i '/export FREETYPE_PROPERTIES="truetype:interpreter-version=40"/s/^#//' /e
 
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
-sudo -u "$name" mkdir -p "/home/$name/.local/var/cache/zsh/"
+sudo -u "$name" mkdir -p "$home/local/var/cache/zsh/"
 sudo -u "$name" mkdir -p "$config/mpd/playlists/"
 
 # Make dash the default #!/bin/sh symlink.
@@ -308,43 +312,41 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
 chmod 755 /usr/local/bin/dra-cla
 sudo -u "$name" mkdir -p "$config/nsxiv/exec"
-sudo -u "$name" ln -sf "/home/$name/.local/bin/key-handler" "$config/nsxiv/exec/key-handler"
+sudo -u "$name" ln -sf "$home/local/bin/key-handler" "$config/nsxiv/exec/key-handler"
 mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
-mv "/home/$name/.local/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages; chmod 755 /usr/local/lib/cleanup-packages
-mv "/home/$name/.local/bin/tordone" /usr/local/bin/tordone; chown "$name":wheel /usr/local/bin/tordone
-#mv "/home/$name/.local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
-mv "/home/$name/.local/share/temp/phantomjs" /usr/bin/phantomjs
-mv "/home/$name/.local/share/temp/ff2mpv-rust" /usr/local/bin/ff2mpv-rust
-mv "/home/$name/.local/share/temp/betterfox_updater" /usr/local/bin/betterfox_updater; chown "$name":wheel /usr/local/bin/betterfox_updater
-mv "/home/$name/.local/share/temp/keyd_config" /etc/keyd/default.conf
-mv "/home/$name/.local/share/temp/updatedb.conf" /etc/updatedb.conf
-mv "/home/$name/.local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
-mv "/home/$name/.local/share/temp/policies.json" /etc/firefox/policies/policies.json
-mv "/home/$name/.local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
-mv "/home/$name/.local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
-mv "/home/$name/.local/share/temp/95-systemd-boot.hook" /etc/pacman.d/hooks/95-systemd-boot.hook
-mv "/home/$name/.local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
-mv "/home/$name/.local/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
-rm -rf "/home/$name/.local/share/temp"
+mv "$home/local/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages; chmod 755 /usr/local/lib/cleanup-packages
+mv "$home/local/bin/tordone" /usr/local/bin/tordone; chown "$name":wheel /usr/local/bin/tordone
+#mv "$home/local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+mv "$home/local/share/temp/keyd_config" /etc/keyd/default.conf
+mv "$home/local/share/temp/updatedb.conf" /etc/updatedb.conf
+mv "$home/local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
+mv "$home/local/share/temp/policies.json" /etc/firefox/policies/policies.json
+mv "$home/local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
+mv "$home/local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
+mv "$home/local/share/temp/95-systemd-boot.hook" /etc/pacman.d/hooks/95-systemd-boot.hook
+mv "$home/local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
+mv "$home/local/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
+rm -rf "$home/local/share/temp"
 systemctl enable keyd
 
 # Configure Emby
-mkdir /media_files
-mkdir /media_files/movies
-mkdir /media_files/tv
-mkdir /media_files/torrents
+media=/srv/media
+mkdir $media
+mkdir $media/movies
+mkdir $media/tv
+mkdir $media/torrents
 mkdir /etc/systemd/system/emby-server.service.d
 groupadd media
 usermod -aG media "$name"
-chgrp -R media /media_files
-find /media_files -type f -exec chmod 664 {} +
-find /media_files -type d -exec chmod 775 {} +
-find /media_files -type d -exec chmod g+s {} +
+chgrp -R media $media
+find $media -type f -exec chmod 664 {} +
+find $media -type d -exec chmod 775 {} +
+find $media -type d -exec chmod g+s {} +
 echo "[Service]
 SupplementaryGroups=media
-ReadWritePaths=/media_files
+ReadWritePaths=$media
 UMask=0002" >/etc/systemd/system/emby-server.service.d/write-permissions.conf
 
 # Enable undervolting service
@@ -361,8 +363,13 @@ UMask=0002" >/etc/systemd/system/emby-server.service.d/write-permissions.conf
 EndSection' >/etc/X11/xorg.conf.d/40-libinput.conf
 
 # Cleanup some cache every week
-echo "e  /home/$name/.cache/lf/ - - - 7d
-e  /home/$name/.cache/ueberzugpp/ - - - 7d" > /etc/tmpfiles.d/cleanup-previews.conf
+echo "e  $home/local/var/cache/lf/ - - - 7d
+e  $home/local/var/cache/ueberzugpp/ - - - 7d" > /etc/tmpfiles.d/cleanup-previews.conf
+
+# Fix yt-dlp throttling
+cd "$config/mpv/scripts/ytrangefix" || return 1
+sudo -u "$name" openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650 -passout pass:"third-wheel" -subj "/C=US/ST=private/L=province/O=city/CN=hostname.example.com" >/dev/null 2>&1
+cd /tmp || return 1
 
 # All this below to get Firefox installed with add-ons and non-bad settings.
 
@@ -382,8 +389,6 @@ t="/tmp/f$$"
 curl -sL -o $t "https://raw.githubusercontent.com/yokoffing/Betterfox/refs/heads/main/user.js"
 cat "$config/firefox/custom.js" $t > "$config/firefox/user.js"
 sudo -u "$name" ln -sf "$config/firefox/user.js" "$pdir/user.js"
-sudo -u "$name" mkdir "/home/$name/.local/etc/mozilla/native-messaging-hosts/"
-sudo -u "$name" mv "$config/firefox/ff2mpv.json" "/home/$name/.local/etc/mozilla/native-messaging-hosts/ff2mpv.json"
 rm -f $t
 
 # Kill the now unnecessary Firefox instance.
@@ -405,7 +410,7 @@ awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else pri
 mv /etc/fstab.new /etc/fstab
 
 # Fix mpv buffering when using yt-dlp
-fix_mpv_ytdl
+#fix_mpv_ytdl
 
 # Switch to Cloudflare DNS
 printf "nameserver 1.1.1.1\nnameserver 1.0.0.1" > /etc/resolv.conf.manually-configured
@@ -431,6 +436,7 @@ timedatectl set-ntp true
 
 # Cleanup
 rm -f /etc/sudoers.d/larbs-temp
+rm -rf /home
 
 # Last message! Install complete!
 finalize

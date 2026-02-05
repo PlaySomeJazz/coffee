@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Set XDG base directories
-printf '%s\n' 'XDG_CACHE_HOME  DEFAULT=@{HOME}/.local/var/cache
-XDG_CONFIG_HOME DEFAULT=@{HOME}/.local/etc
-XDG_DATA_HOME   DEFAULT=@{HOME}/.local/share
-XDG_STATE_HOME  DEFAULT=@{HOME}/.local/var/state
+printf '%s\n' 'XDG_CACHE_HOME  DEFAULT=@{HOME}/local/var/cache
+XDG_CONFIG_HOME DEFAULT=@{HOME}/local/etc
+XDG_DATA_HOME   DEFAULT=@{HOME}/local/share
+XDG_STATE_HOME  DEFAULT=@{HOME}/local/var/state
 ZDOTDIR         DEFAULT=${XDG_CONFIG_HOME}/zsh' >>/etc/security/pam_env.conf
 
 # Sets up systemd-boot.
