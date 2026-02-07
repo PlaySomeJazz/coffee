@@ -71,8 +71,9 @@ adduserandpass() {
 	export home="/usr/$name"
 	useradd -m -g wheel -s /bin/zsh "$name" >/dev/null 2>&1 ||
 		usermod -a -G wheel "$name" && mkdir -p "$home" && chown "$name":wheel "$home"
-	export repodir="$home/local/src"
-	export config="$home/local/etc"
+	export DOTS="$home/local"
+	export repodir="$DOTS/src"
+	export config="$DOTS/etc"
 	mkdir -p "$repodir"
 	chown -R "$name":wheel "$(dirname "$repodir")"
 	echo "$name:$pass1" | chpasswd
@@ -300,9 +301,17 @@ sed -i 's/^#Storage=auto$/Storage=none/' /etc/systemd/journald.conf
 # Improve font rendering
 sed -i '/export FREETYPE_PROPERTIES="truetype:interpreter-version=40"/s/^#//' /etc/profile.d/freetype2.sh
 
+# Set XDG base directories
+printf '%s\n' 'DOTS            DEFAULT=@{HOME}/local
+XDG_CACHE_HOME  DEFAULT=${DOTS}/var/cache
+XDG_CONFIG_HOME DEFAULT=${DOTS}/etc
+XDG_DATA_HOME   DEFAULT=${DOTS}/share
+XDG_STATE_HOME  DEFAULT=${DOTS}/var/state
+ZDOTDIR         DEFAULT=${XDG_CONFIG_HOME}/zsh' >>/etc/security/pam_env.conf
+
 # Make zsh the default shell for the user.
 chsh -s /bin/zsh "$name" >/dev/null 2>&1
-sudo -u "$name" mkdir -p "$home/local/var/cache/zsh/"
+sudo -u "$name" mkdir -p "$DOTS/var/cache/zsh/"
 sudo -u "$name" mkdir -p "$config/mpd/playlists/"
 
 # Make dash the default #!/bin/sh symlink.
@@ -312,23 +321,23 @@ ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
 chmod 755 /usr/local/bin/dra-cla
 sudo -u "$name" mkdir -p "$config/nsxiv/exec"
-sudo -u "$name" ln -sf "$home/local/bin/key-handler" "$config/nsxiv/exec/key-handler"
+sudo -u "$name" ln -sf "$DOTS/bin/key-handler" "$config/nsxiv/exec/key-handler"
 mkdir -p /etc/firefox/policies
 mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
-mv "$home/local/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages; chmod 755 /usr/local/lib/cleanup-packages
-mv "$home/local/bin/tordone" /usr/local/bin/tordone; chown "$name":wheel /usr/local/bin/tordone
-#mv "$home/local/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
-mv "$home/local/share/temp/keyd_config" /etc/keyd/default.conf
-mv "$home/local/share/temp/updatedb.conf" /etc/updatedb.conf
-mv "$home/local/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
-mv "$home/local/share/temp/policies.json" /etc/firefox/policies/policies.json
-mv "$home/local/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
-mv "$home/local/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
-mv "$home/local/share/temp/95-systemd-boot.hook" /etc/pacman.d/hooks/95-systemd-boot.hook
-mv "$home/local/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
-mv "$home/local/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
-rm -rf "$home/local/share/temp"
+mv "$DOTS/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages; chmod 755 /usr/local/lib/cleanup-packages
+mv "$DOTS/bin/tordone" /usr/local/bin/tordone; chown "$name":wheel /usr/local/bin/tordone
+#mv "$DOTS/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
+mv "$DOTS/share/temp/keyd_config" /etc/keyd/default.conf
+mv "$DOTS/share/temp/updatedb.conf" /etc/updatedb.conf
+mv "$DOTS/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
+mv "$DOTS/share/temp/policies.json" /etc/firefox/policies/policies.json
+mv "$DOTS/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook
+mv "$DOTS/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
+mv "$DOTS/share/temp/95-systemd-boot.hook" /etc/pacman.d/hooks/95-systemd-boot.hook
+mv "$DOTS/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
+mv "$DOTS/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
+rm -rf "$DOTS/share/temp"
 systemctl enable keyd
 
 # Configure Emby
@@ -363,8 +372,8 @@ UMask=0002" >/etc/systemd/system/emby-server.service.d/write-permissions.conf
 EndSection' >/etc/X11/xorg.conf.d/40-libinput.conf
 
 # Cleanup some cache every week
-echo "e  $home/local/var/cache/lf/ - - - 7d
-e  $home/local/var/cache/ueberzugpp/ - - - 7d" > /etc/tmpfiles.d/cleanup-previews.conf
+echo "e  $DOTS/var/cache/lf/ - - - 7d
+e  $DOTS/var/cache/ueberzugpp/ - - - 7d" > /etc/tmpfiles.d/cleanup-previews.conf
 
 # Fix yt-dlp throttling
 cd "$config/mpv/scripts/ytrangefix" || return 1
@@ -436,7 +445,6 @@ timedatectl set-ntp true
 
 # Cleanup
 rm -f /etc/sudoers.d/larbs-temp
-rm -rf /home
 
 # Last message! Install complete!
 finalize
