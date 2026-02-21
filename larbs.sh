@@ -272,6 +272,10 @@ sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 manualinstall $aurhelper || error "Failed to install AUR helper."
 
+# Install xorg-server.
+manualinstall xorg-server-git
+manualinstall xf86-input-libinput-git
+
 # Make sure .*-git AUR packages get updated automatically.
 $aurhelper -Y --save --devel
 
