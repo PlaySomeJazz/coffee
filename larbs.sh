@@ -322,8 +322,6 @@ sudo -u "$name" mkdir -p "$config/mpd/playlists/"
 ln -sfT dash /usr/bin/sh >/dev/null 2>&1
 
 # Transfer some settings over
-curl -s -o /usr/local/bin/dra-cla "https://raw.githubusercontent.com/CoolnsX/dra-cla/refs/heads/main/dra-cla"; chown "$name":wheel /usr/local/bin/dra-cla
-chmod 755 /usr/local/bin/dra-cla
 sudo -u "$name" mkdir -p "$config/nsxiv/exec"
 sudo -u "$name" ln -sf "$DOTS/bin/key-handler" "$config/nsxiv/exec/key-handler"
 mkdir -p /etc/firefox/policies
@@ -331,9 +329,7 @@ mkdir -p /etc/pacman.d/hooks
 mkdir -p /usr/local/lib
 mv "$DOTS/share/temp/cleanup-packages" /usr/local/lib/cleanup-packages; chown root:root /usr/local/lib/cleanup-packages; chmod 755 /usr/local/lib/cleanup-packages
 mv "$DOTS/bin/tordone" /usr/local/bin/tordone; chown "$name":wheel /usr/local/bin/tordone
-#mv "$DOTS/share/temp/intel-undervolt.conf" /etc/intel-undervolt.conf
 mv "$DOTS/share/temp/keyd_config" /etc/keyd/default.conf
-mv "$DOTS/share/temp/updatedb.conf" /etc/updatedb.conf
 mv "$DOTS/share/temp/60-ioschedulers.rules" /etc/udev/rules.d/60-ioschedulers.rules
 mv "$DOTS/share/temp/policies.json" /etc/firefox/policies/policies.json
 mv "$DOTS/share/temp/package_cleanup.hook" /etc/pacman.d/hooks/package_cleanup.hook

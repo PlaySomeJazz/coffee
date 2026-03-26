@@ -3,7 +3,6 @@
 ,xorg-xset,"speedup cursor."
 ,xorg-xsetroot,"statusbar dependency."
 ,pacman-contrib,"cleanup hook dependency."
-,plocate,"file searcher dependency."
 ,otf-libertinus,"provides the sans and serif fonts for LARBS."
 ,woff2-font-awesome,"provides extended glyph support."
 ,ttf-nerd-fonts-symbols,"even more glyphs."
