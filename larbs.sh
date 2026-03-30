@@ -337,6 +337,7 @@ mv "$DOTS/share/temp/relink_dash.hook" /etc/pacman.d/hooks/relink_dash.hook
 mv "$DOTS/share/temp/95-systemd-boot.hook" /etc/pacman.d/hooks/95-systemd-boot.hook
 mv "$DOTS/share/temp/99-sysctl.conf" /etc/sysctl.d/99-sysctl.conf
 mv "$DOTS/share/temp/blacklist.conf" /etc/modprobe.d/blacklist.conf
+mv "$DOTS/share/temp/jsh" /bin/jsh
 rm -rf "$DOTS/share/temp"
 systemctl enable keyd
 
@@ -412,7 +413,7 @@ sed -i 's/^#AutoEnable=false/AutoEnable=false/' /etc/bluetooth/main.conf
 sed -i 's/^AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
 
 # Enable audio
-sudo -u "$name" systemctl --user enable pipewire mpd
+sudo -u "$name" systemctl --user enable pipewire
 
 # Tune fstab
 awk '{if ($3 == "ext4") print $1" "$2"\t"$3"\t"$4",commit=60 "$5"\t"$6; else print}' /etc/fstab > /etc/fstab.new
